@@ -9,6 +9,12 @@
 import SwiftUI
 
 struct MissionView: View {
+    @State private var direction = Direction.down
+    @State private var imageScale: CGFloat = 0.8
+   
+    enum Direction {
+        case down, up
+    }
     let mission: Mission
     let astronauts: [CrewMember]
     
@@ -41,7 +47,8 @@ struct MissionView: View {
                     Image(self.mission.image)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: geometry.size.width * 0.7)
+                        //.frame(width: geometry.size.width * 0.7)
+                        .frame(width: geometry.size.width * self.imageScale, height: geometry.size.height * self.imageScale)
                         .padding(.top)
                     
                     HStack {
@@ -80,6 +87,16 @@ struct MissionView: View {
                     Spacer(minLength: 25)
                 }
             }
+            .gesture(
+                DragGesture()
+                    .onChanged { drag in
+                        withAnimation {
+                            self.direction = drag.translation.height > 0 ? .up : .down
+                            self.imageScale = self.direction == .up ? 0.80 : 0.20
+                        }
+                    }
+            
+            )
         }
         .navigationBarTitle(Text(mission.displayName),
                             displayMode: .inline)
